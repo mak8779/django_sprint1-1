@@ -1,5 +1,7 @@
 from django.shortcuts import render
 
+from django.http import Http404
+
 posts = [
     {
         'id': 0,
@@ -43,16 +45,21 @@ posts = [
     },
 ]
 
+POSTS = {post['id']: post for post in posts}
+
 
 def index(request):
     template = 'blog/index.html'
-    context = {'posts': posts}
+    context = {'posts': list(POSTS.values())}
     return render(request, template, context)
 
 
 def post_detail(request, id):
     template = 'blog/detail.html'
-    context = {'post': posts[id]}
+    try:
+        context = {'post': POSTS[id]}
+    except KeyError:
+        raise Http404("Такого поста нет")
     return render(request, template, context)
 
 
